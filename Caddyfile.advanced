@@ -1,0 +1,243 @@
+# Vereinskasse Caddy Reverse Proxy - Erweiterte Konfiguration
+# 
+# WICHTIG: Nur EINE der folgenden Konfigurationen verwenden!
+# Uncomment (# entfernen) die gewünschte Variante.
+
+# ============================================================================
+# VARIANTE 1: HTTP-Only für kasse.internal (Standard)
+# ============================================================================
+# Für lokales Netzwerk ohne HTTPS
+# Benötigt: DNS-Eintrag oder Hosts-Datei für kasse.internal
+# ============================================================================
+
+kasse.internal {
+    reverse_proxy vereinskasse:3000
+
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    encode gzip
+
+    handle_errors {
+        @502 expression `{http.error.status_code} == 502`
+        handle @502 {
+            respond "Vereinskasse ist momentan nicht erreichbar. Bitte später erneut versuchen." 502
+        }
+        
+        @503 expression `{http.error.status_code} == 503`
+        handle @503 {
+            respond "Vereinskasse Wartungsmodus. Bitte warten..." 503
+        }
+    }
+}
+
+
+# ============================================================================
+# VARIANTE 2: HTTP mit IP-Adresse als Fallback
+# ============================================================================
+# Zugriff via kasse.internal UND direkt per IP
+# Uncomment die folgenden Zeilen und IP anpassen:
+# ============================================================================
+
+# 192.168.1.100 {
+#     reverse_proxy vereinskasse:3000
+#     encode gzip
+#     
+#     header {
+#         X-Content-Type-Options "nosniff"
+#         X-Frame-Options "SAMEORIGIN"
+#         -Server
+#     }
+# }
+
+
+# ============================================================================
+# VARIANTE 3: Mehrere Domains/Hostnamen
+# ============================================================================
+# Wenn mehrere Namen auf die Kasse zeigen sollen
+# ============================================================================
+
+# kasse.internal, bar.local, getraenke.lokal {
+#     reverse_proxy vereinskasse:3000
+#     encode gzip
+# }
+
+
+# ============================================================================
+# VARIANTE 4: HTTPS mit Self-Signed Zertifikat (Für .internal/.local)
+# ============================================================================
+# Browser zeigen Sicherheitswarnung!
+# Nur für Testing oder wenn Zertifikat manuell importiert wird
+# ============================================================================
+
+# kasse.internal {
+#     reverse_proxy vereinskasse:3000
+#     
+#     tls internal  # Self-signed Zertifikat
+#     
+#     encode gzip
+# }
+
+
+# ============================================================================
+# VARIANTE 5: HTTPS mit Let's Encrypt (Für öffentliche Domains)
+# ============================================================================
+# Benötigt: Echte Domain die auf deinen Server zeigt
+# Caddy holt automatisch kostenloses Let's Encrypt Zertifikat
+# Port 80 und 443 müssen von außen erreichbar sein!
+# ============================================================================
+
+# kasse.meinverein.de {
+#     reverse_proxy vereinskasse:3000
+#     
+#     # Let's Encrypt Email (für Benachrichtigungen)
+#     tls admin@meinverein.de
+#     
+#     encode gzip
+#     
+#     # Zusätzliche Security Headers für öffentlichen Zugriff
+#     header {
+#         Strict-Transport-Security "max-age=31536000; includeSubDomains"
+#         X-Content-Type-Options "nosniff"
+#         X-Frame-Options "DENY"
+#         X-XSS-Protection "1; mode=block"
+#         Referrer-Policy "strict-origin-when-cross-origin"
+#         -Server
+#     }
+# }
+
+
+# ============================================================================
+# VARIANTE 6: Basic Authentication (Passwortschutz auf Proxy-Ebene)
+# ============================================================================
+# Zusätzlicher Passwortschutz VOR der Anwendung
+# ============================================================================
+
+# kasse.internal {
+#     # Basic Auth aktivieren
+#     basicauth {
+#         # Format: username hashed_password
+#         # Passwort generieren: docker exec vereinskasse-caddy caddy hash-password
+#         admin JDJhJDE0JEg1RkxON3VoV0lJQmZoYnNYZnBRQnVucWpWTnlzVXZGZ1NKdGlGV2IvVmRqd2FESGxJY3Vt
+#     }
+#     
+#     reverse_proxy vereinskasse:3000
+#     encode gzip
+# }
+
+
+# ============================================================================
+# VARIANTE 7: IP-Whitelist (Nur bestimmte IPs erlauben)
+# ============================================================================
+# Nur Zugriff von bestimmten IP-Adressen
+# ============================================================================
+
+# kasse.internal {
+#     # Nur lokales Netzwerk
+#     @allowed {
+#         remote_ip 192.168.1.0/24
+#     }
+#     
+#     handle @allowed {
+#         reverse_proxy vereinskasse:3000
+#     }
+#     
+#     handle {
+#         respond "Zugriff verweigert" 403
+#     }
+# }
+
+
+# ============================================================================
+# VARIANTE 8: Wartungsmodus mit Static Page
+# ============================================================================
+# Für Wartungsarbeiten eine statische Seite anzeigen
+# ============================================================================
+
+# kasse.internal {
+#     # Wartungsmodus aktivieren
+#     # respond "🔧 Wartung - Die Kasse ist vorübergehend nicht verfügbar. Bitte später erneut versuchen." 503
+#     
+#     # Normal-Betrieb (uncomment):
+#     reverse_proxy vereinskasse:3000
+# }
+
+
+# ============================================================================
+# VARIANTE 9: Rate Limiting (DoS-Schutz)
+# ============================================================================
+# Begrenzt Anfragen pro IP (benötigt caddy-ratelimit Plugin)
+# ============================================================================
+
+# kasse.internal {
+#     rate_limit {
+#         zone kasse {
+#             key {remote_host}
+#             events 100
+#             window 1m
+#         }
+#     }
+#     
+#     reverse_proxy vereinskasse:3000
+# }
+
+
+# ============================================================================
+# VARIANTE 10: Logging mit Details
+# ============================================================================
+# Erweiterte Logs für Debugging
+# ============================================================================
+
+# kasse.internal {
+#     reverse_proxy vereinskasse:3000
+#     
+#     log {
+#         output file /var/log/caddy/access.log {
+#             roll_size 100mb
+#             roll_keep 5
+#             roll_keep_for 720h
+#         }
+#         format json
+#         
+#         # Welche Felder loggen
+#         format filter {
+#             fields {
+#                 request>remote_ip ip
+#                 request>proto protocol
+#                 request>method method
+#                 request>uri uri
+#                 request>headers>User-Agent user_agent
+#                 status status
+#                 duration duration
+#             }
+#         }
+#     }
+# }
+
+
+# ============================================================================
+# Global Options (für alle Varianten)
+# ============================================================================
+
+{
+    # Admin API deaktivieren (Sicherheit)
+    admin off
+    
+    # Globale Logs
+    log {
+        output file /var/log/caddy/caddy.log
+        level INFO
+    }
+    
+    # Auto HTTPS deaktivieren (für .internal)
+    auto_https off
+}

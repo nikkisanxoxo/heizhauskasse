@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiken - Vereinskasse</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .filters {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .filter-group button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: auto;
+            transition: all 0.3s;
+        }
+
+        .filter-group button:hover {
+            background: #5568d3;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .summary-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .summary-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .stats-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .stats-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stats-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .stats-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .stats-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .room-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #e0e7ff;
+            color: #667eea;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bar-label {
+            min-width: 150px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .bar-container {
+            flex: 1;
+            background: #e0e7ff;
+            border-radius: 6px;
+            height: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-table {
+                overflow-x: auto;
+            }
+
+            .bar-label {
+                min-width: 100px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Passwort-Dialog -->
+        <div id="passwordDialog" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 40px; border-radius: 20px; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <h2 style="text-align: center; margin-bottom: 10px; color: #667eea;">🔒 Passwort erforderlich</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 30px;">Bitte gib das Admin-Passwort ein</p>
+                
+                <input type="password" id="passwordInput" placeholder="Passwort" 
+                       style="width: 100%; padding: 15px; font-size: 1.1em; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px;"
+                       onkeypress="if(event.key==='Enter') checkPassword()">
+                
+                <div id="passwordError" style="display: none; background: #fee; color: #c00; padding: 10px; border-radius: 6px; margin-bottom: 15px; text-align: center;"></div>
+                
+                <div style="display: flex; gap: 15px;">
+                    <button onclick="window.location.href='index.html'" style="flex: 1; padding: 15px; background: #ccc; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer;">Zurück</button>
+                    <button onclick="checkPassword()" style="flex: 1; padding: 15px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 1.1em; font-weight: bold; cursor: pointer;">Anmelden</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainContent" style="display: none;">
+        <h1>📊 Statistiken</h1>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>Von:</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="filter-group">
+                <label>Bis:</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="filter-group">
+                <label>Raum:</label>
+                <select id="roomFilter">
+                    <option value="">Alle Räume</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button onclick="loadStatistics()">Aktualisieren</button>
+            </div>
+            <div class="filter-group">
+                <button onclick="exportStatistics()" style="background: #10b981;">📥 Export CSV</button>
+            </div>
+        </div>
+
+        <div class="summary-cards" id="summaryCards">
+            <!-- Wird dynamisch gefüllt -->
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Verkaufte Getränke nach Menge</div>
+            <div class="bar-chart" id="quantityChart">
+                <!-- Wird dynamisch gefüllt -->
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Umsatz nach Getränk</div>
+            <div class="bar-chart" id="revenueChart">
+                <!-- Wird dynamisch gefüllt -->
+            </div>
+        </div>
+
+        <div class="stats-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Raum</th>
+                        <th>Getränk</th>
+                        <th>Anzahl</th>
+                        <th>Umsatz</th>
+                    </tr>
+                </thead>
+                <tbody id="statsTableBody">
+                    <!-- Wird dynamisch gefüllt -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <a href="index.html">← Zurück zur Kasse</a>
+        </div>
+        </div> <!-- End mainContent -->
+    </div>
+
+    <script>
+        let rooms = [];
+        let currentPassword = '';
+        let currentStats = null;
+
+        // Passwort prüfen
+        async function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorEl = document.getElementById('passwordError');
+            
+            try {
+                const response = await fetch('/api/auth/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                if (response.ok) {
+                    currentPassword = password;
+                    document.getElementById('passwordDialog').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    await init();
+                } else {
+                    errorEl.textContent = '❌ Falsches Passwort';
+                    errorEl.style.display = 'block';
+                    document.getElementById('passwordInput').value = '';
+                }
+            } catch (error) {
+                errorEl.textContent = '❌ Verbindungsfehler';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        // Statistiken als CSV exportieren
+        function exportStatistics() {
+            if (!currentStats) {
+                alert('Keine Daten zum Exportieren vorhanden. Bitte erst Statistiken laden.');
+                return;
+            }
+
+            const startDate = document.getElementById('startDate').value || 'Anfang';
+            const endDate = document.getElementById('endDate').value || 'Heute';
+            
+            // CSV Header
+            let csv = 'Raum,Getränk,Anzahl,Umsatz (EUR)\n';
+            
+            // Daten nach Raum gruppieren
+            const roomData = {};
+            
+            // Initialisiere alle bekannten Räume
+            rooms.forEach(room => {
+                roomData[room.name] = {
+                    drinks: [],
+                    totalQuantity: 0,
+                    totalRevenue: 0
+                };
+            });
+            
+            // Füge Getränke-Daten hinzu
+            if (currentStats.statistics && currentStats.statistics.length > 0) {
+                currentStats.statistics.forEach(stat => {
+                    if (!roomData[stat.room_name]) {
+                        roomData[stat.room_name] = {
+                            drinks: [],
+                            totalQuantity: 0,
+                            totalRevenue: 0
+                        };
+                    }
+                    roomData[stat.room_name].drinks.push(stat);
+                    roomData[stat.room_name].totalQuantity += stat.total_quantity;
+                    roomData[stat.room_name].totalRevenue += stat.total_revenue;
+                });
+            }
+            
+            // Getränke pro Raum im Detail
+            Object.keys(roomData).forEach(roomName => {
+                roomData[roomName].drinks.forEach(stat => {
+                    csv += `"${stat.room_name}","${stat.drink_name}",${stat.total_quantity},${stat.total_revenue.toFixed(2)}\n`;
+                });
+            });
+            
+            csv += '\n';
+            csv += '=== ABRECHNUNG PRO RAUM ===\n';
+            csv += '\n';
+            
+            // Trinkgeld pro Raum - KORREKT aus API
+            const tipsPerRoom = {};
+            
+            // Initialisiere ALLE Räume mit 0
+            rooms.forEach(room => {
+                tipsPerRoom[room.name] = 0;
+            });
+            
+            // Trage tatsächliche Trinkgeld-Werte ein (aus API)
+            if (currentStats.tips_per_room && Array.isArray(currentStats.tips_per_room)) {
+                currentStats.tips_per_room.forEach(tip => {
+                    if (tip.room_name && tip.total_tips !== undefined && tip.total_tips !== null) {
+                        tipsPerRoom[tip.room_name] = parseFloat(tip.total_tips);
+                    }
+                });
+            }
+            
+            // Debug-Ausgabe
+            console.log('=== CSV EXPORT DEBUG ===');
+            console.log('Alle Räume:', rooms.map(r => r.name));
+            console.log('roomData:', roomData);
+            console.log('currentStats.tips_per_room:', currentStats.tips_per_room);
+            console.log('tipsPerRoom (final):', tipsPerRoom);
+            console.log('======================');
+            
+            // Pro Raum Zusammenfassung - ALLE Räume
+            rooms.forEach(room => {
+                const roomName = room.name;
+                const data = roomData[roomName] || { totalQuantity: 0, totalRevenue: 0 };
+                const tips = tipsPerRoom[roomName] || 0;
+                
+                csv += `${roomName}\n`;
+                csv += `Getränke,${data.totalQuantity}\n`;
+                csv += `Einnahmen Getränke,${data.totalRevenue.toFixed(2)}\n`;
+                csv += `Trinkgeld,${tips.toFixed(2)}\n`;
+                csv += `Gesamt ${roomName},${(data.totalRevenue + tips).toFixed(2)}\n`;
+                csv += '\n';
+            });
+            
+            // Gesamt-Zusammenfassung
+            csv += '=== GESAMT ===\n';
+            csv += `Gesamt Getränke,${currentStats.summary.total_items || 0}\n`;
+            csv += `Gesamt Einnahmen Getränke,${(currentStats.summary.total_revenue || 0).toFixed(2)}\n`;
+            csv += `Gesamt Trinkgeld,${(currentStats.summary.total_tips || 0).toFixed(2)}\n`;
+            csv += `Gesamt Einnahmen,${((currentStats.summary.total_revenue || 0) + (currentStats.summary.total_tips || 0)).toFixed(2)}\n`;
+            csv += '\n';
+            csv += `Zeitraum,"${startDate} bis ${endDate}"\n`;
+            csv += `Export-Datum,${new Date().toLocaleString('de-DE')}\n`;
+            
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `statistik_${startDate}_${endDate}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Räume laden
+        async function loadRooms() {
+            try {
+                const response = await fetch('/api/rooms');
+                rooms = await response.json();
+                
+                const roomFilter = document.getElementById('roomFilter');
+                roomFilter.innerHTML = '<option value="">Alle Räume</option>' +
+                    rooms.map(room => `<option value="${room.id}">${room.name}</option>`).join('');
+            } catch (error) {
+                console.error('Fehler beim Laden der Räume:', error);
+            }
+        }
+
+        // Statistiken laden
+        async function loadStatistics() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const roomId = document.getElementById('roomFilter').value;
+
+            let url = '/api/statistics?';
+            if (startDate) url += `start_date=${startDate}&`;
+            if (endDate) url += `end_date=${endDate}&`;
+            if (roomId) url += `room_id=${roomId}&`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                currentStats = data; // Für Export speichern
+                
+                renderSummary(data.summary);
+                renderStats(data.statistics);
+                renderCharts(data.statistics);
+            } catch (error) {
+                console.error('Fehler beim Laden der Statistiken:', error);
+            }
+        }
+
+        // Zusammenfassung anzeigen
+        function renderSummary(summary) {
+            const container = document.getElementById('summaryCards');
+            
+            if (!summary || summary.total_items === null) {
+                container.innerHTML = '<div class="no-data">Keine Daten verfügbar</div>';
+                return;
+            }
+
+            // Basis-Karten
+            let cards = `
+                <div class="summary-card">
+                    <h3>Verkaufte Getränke</h3>
+                    <div class="value">${summary.total_items || 0}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Umsatz Getränke</h3>
+                    <div class="value">${(summary.total_revenue || 0).toFixed(2)} €</div>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <h3>Trinkgeld Gesamt</h3>
+                    <div class="value">${(summary.total_tips || 0).toFixed(2)} €</div>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <h3>Gesamt</h3>
+                    <div class="value">${((summary.total_revenue || 0) + (summary.total_tips || 0)).toFixed(2)} €</div>
+                </div>
+            `;
+            
+            // Trinkgeld pro Raum anzeigen (wenn verfügbar)
+            if (currentStats.tips_per_room && currentStats.tips_per_room.length > 0) {
+                cards += '<div style="grid-column: 1 / -1; background: #e0f7fa; padding: 15px; border-radius: 8px; margin-top: 10px;"><strong>Trinkgeld pro Raum:</strong><br>';
+                currentStats.tips_per_room.forEach(tip => {
+                    cards += `<span style="display: inline-block; margin: 5px 10px 5px 0;">📍 ${tip.room_name}: <strong>${(tip.total_tips || 0).toFixed(2)} €</strong></span>`;
+                });
+                cards += '</div>';
+            }
+
+            container.innerHTML = cards;
+        }
+
+        // Detaillierte Statistiken anzeigen
+        function renderStats(statistics) {
+            const tbody = document.getElementById('statsTableBody');
+            
+            if (!statistics || statistics.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="no-data">Keine Daten verfügbar</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = statistics.map(stat => `
+                <tr>
+                    <td><span class="room-badge">${stat.room_name}</span></td>
+                    <td>${stat.drink_name}</td>
+                    <td>${stat.total_quantity}</td>
+                    <td><strong>${stat.total_revenue.toFixed(2)} €</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        // Charts rendern
+        function renderCharts(statistics) {
+            if (!statistics || statistics.length === 0) {
+                document.getElementById('quantityChart').innerHTML = '<div class="no-data">Keine Daten verfügbar</div>';
+                document.getElementById('revenueChart').innerHTML = '<div class="no-data">Keine Daten verfügbar</div>';
+                return;
+            }
+
+            // Getränke aggregieren (über alle Räume)
+            const drinkTotals = {};
+            statistics.forEach(stat => {
+                if (!drinkTotals[stat.drink_name]) {
+                    drinkTotals[stat.drink_name] = { quantity: 0, revenue: 0 };
+                }
+                drinkTotals[stat.drink_name].quantity += stat.total_quantity;
+                drinkTotals[stat.drink_name].revenue += stat.total_revenue;
+            });
+
+            // Nach Menge sortieren
+            const sortedByQuantity = Object.entries(drinkTotals)
+                .sort((a, b) => b[1].quantity - a[1].quantity);
+
+            const maxQuantity = Math.max(...sortedByQuantity.map(([_, data]) => data.quantity));
+
+            document.getElementById('quantityChart').innerHTML = sortedByQuantity.map(([drink, data]) => {
+                const percentage = (data.quantity / maxQuantity) * 100;
+                return `
+                    <div class="bar-item">
+                        <div class="bar-label">${drink}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: ${percentage}%">
+                                ${data.quantity}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Nach Umsatz sortieren
+            const sortedByRevenue = Object.entries(drinkTotals)
+                .sort((a, b) => b[1].revenue - a[1].revenue);
+
+            const maxRevenue = Math.max(...sortedByRevenue.map(([_, data]) => data.revenue));
+
+            document.getElementById('revenueChart').innerHTML = sortedByRevenue.map(([drink, data]) => {
+                const percentage = (data.revenue / maxRevenue) * 100;
+                return `
+                    <div class="bar-item">
+                        <div class="bar-label">${drink}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: ${percentage}%">
+                                ${data.revenue.toFixed(2)} €
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialisierung
+        async function init() {
+            await loadRooms();
+            await loadStatistics();
+        }
+
+        // Auto-focus auf Passwort-Feld
+        document.getElementById('passwordInput').focus();
+    </script>
+</body>
+</html>

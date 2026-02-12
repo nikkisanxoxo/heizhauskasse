@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schnellanleitung - Vereinskasse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍺 Vereinskasse - Schnellanleitung</h1>
+        
+        <div style="background: #e0f7fa; border: 3px solid #00acc1; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+            <h2 style="color: #00acc1; margin-bottom: 15px;">🐳 Installation mit Docker (Empfohlen)</h2>
+            <p style="margin-bottom: 15px;"><strong>Einfacher, sicherer, portabler!</strong></p>
+            
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <h3 style="margin-top: 0; color: #00acc1;">Schritt 1: Docker installieren</h3>
+                <p>Windows/Mac: <code>https://www.docker.com/products/docker-desktop</code></p>
+                <p>Linux: <code>curl -fsSL https://get.docker.com | sh</code></p>
+            </div>
+            
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <h3 style="margin-top: 0; color: #00acc1;">Schritt 2: Container starten</h3>
+                <p><strong>Windows:</strong> Doppelklick auf <code>docker-start.bat</code></p>
+                <p><strong>Linux/Mac:</strong> <code>./docker-start.sh</code> oder <code>docker-compose up -d</code></p>
+            </div>
+            
+            <div style="background: #4caf50; color: white; padding: 15px; border-radius: 8px;">
+                <strong>✓ Fertig!</strong> Öffne <code>http://localhost:3000</code>
+            </div>
+            
+            <p style="margin-top: 15px; font-size: 0.9em; color: #555;">
+                Siehe <strong>DOCKER.md</strong> und <strong>README-DOCKER.md</strong> für Details
+            </p>
+        </div>
+
+        <h2>📦 Alternative: Installation ohne Docker</h2>
+        
+        <div class="step">
+            <h3>Schritt 1: Node.js installieren</h3>
+            <p>Lade Node.js von <strong>https://nodejs.org/</strong> herunter und installiere es.</p>
+            <p>Prüfe die Installation im Terminal:</p>
+            <code>node --version</code>
+        </div>
+
+        <div class="step">
+            <h3>Schritt 2: Projekt vorbereiten</h3>
+            <p>Entpacke den <code>vereinskasse</code> Ordner an einen Ort deiner Wahl.</p>
+            <p>Öffne ein Terminal/Kommandozeile in diesem Ordner.</p>
+        </div>
+
+        <div class="step">
+            <h3>Schritt 3: Abhängigkeiten installieren</h3>
+            <p>Führe im Terminal aus:</p>
+            <code>npm install</code>
+            <p>Dies muss nur einmal gemacht werden!</p>
+        </div>
+
+        <h2>🚀 Server starten</h2>
+
+        <div class="step">
+            <h3>Windows:</h3>
+            <p>Doppelklick auf <code>start.bat</code></p>
+        </div>
+
+        <div class="step">
+            <h3>Linux/Mac:</h3>
+            <p>Im Terminal:</p>
+            <code>./start.sh</code>
+            <p>Oder:</p>
+            <code>npm start</code>
+        </div>
+
+        <div class="success">
+            <strong>✓ Server läuft!</strong><br>
+            Du solltest sehen: "🍺 Vereinskasse läuft auf http://localhost:3000"
+        </div>
+
+        <h2>📱 Auf Tablets zugreifen</h2>
+
+        <div class="step">
+            <h3>Schritt 1: IP-Adresse finden</h3>
+            <p><strong>Windows:</strong> Im Terminal <code>ipconfig</code> eingeben</p>
+            <p><strong>Linux/Mac:</strong> Im Terminal <code>ip addr</code> eingeben</p>
+            <p>Suche nach "IPv4" - z.B. <strong>192.168.1.100</strong></p>
+        </div>
+
+        <div class="step">
+            <h3>Schritt 2: Browser öffnen</h3>
+            <p>Öffne auf dem Tablet den Browser und gehe zu:</p>
+            <code>http://192.168.1.100:3000</code>
+            <p>(Ersetze die IP durch deine gefundene IP-Adresse)</p>
+        </div>
+
+        <div class="step">
+            <h3>Schritt 3: Lesezeichen erstellen</h3>
+            <p>Speichere die Seite als Lesezeichen für schnellen Zugriff!</p>
+        </div>
+
+        <h2>🎯 Verwendung</h2>
+
+        <div class="step">
+            <h3>Kassenmodus (Hauptseite)</h3>
+            <ul>
+                <li>Wähle einen Raum (z.B. "Raum 1")</li>
+                <li>Klicke auf Getränke zum Hinzufügen</li>
+                <li>Passe Mengen mit +/- an</li>
+                <li>Klicke "Bezahlt" wenn Kunde bezahlt hat</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Statistiken ansehen</h3>
+            <p>Klicke unten auf "📊 Statistiken ansehen"</p>
+            <ul>
+                <li>Filtere nach Datum oder Raum</li>
+                <li>Sieh Gesamtumsatz</li>
+                <li>Prüfe verkaufte Mengen</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Getränke verwalten</h3>
+            <p>Klicke auf "⚙️ Verwaltung"</p>
+            <ul>
+                <li>Neue Getränke hinzufügen</li>
+                <li>Preise ändern</li>
+                <li>Getränke aktivieren/deaktivieren</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Wichtige Hinweise</h2>
+
+        <div class="warning">
+            <strong>Datenbank sichern!</strong><br>
+            Die Datei <code>vereinskasse.db</code> enthält alle eure Daten.
+            Erstellt regelmäßig Backups durch Kopieren dieser Datei!
+        </div>
+
+        <div class="warning">
+            <strong>Server-Computer muss laufen!</strong><br>
+            Der Computer/Raspberry Pi mit dem Server muss eingeschaltet sein,
+            damit die Tablets darauf zugreifen können.
+        </div>
+
+        <h2>🆘 Problemlösung</h2>
+
+        <div class="step">
+            <h3>Tablets können nicht verbinden</h3>
+            <ul>
+                <li>Prüfe ob Server läuft (Terminal-Fenster offen?)</li>
+                <li>Prüfe ob alle Geräte im gleichen WLAN sind</li>
+                <li>Prüfe die IP-Adresse erneut</li>
+                <li>Deaktiviere Firewall temporär zum Test</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Server startet nicht</h3>
+            <ul>
+                <li>Prüfe ob Node.js installiert ist: <code>node --version</code></li>
+                <li>Prüfe ob Port 3000 frei ist</li>
+                <li>Installiere Abhängigkeiten neu: <code>npm install</code></li>
+            </ul>
+        </div>
+
+        <h2>📞 Support</h2>
+        
+        <p>Für detaillierte Informationen siehe:</p>
+        <ul>
+            <li><strong>README.md</strong> - Projekt-Übersicht</li>
+            <li><strong>INSTALLATION.md</strong> - Ausführliche Anleitung</li>
+        </ul>
+
+        <hr style="margin: 40px 0;">
+        
+        <p style="text-align: center; color: #999;">
+            <strong>Viel Erfolg mit eurem Kassensystem! 🍻</strong>
+        </p>
+    </div>
+</body>
+</html>

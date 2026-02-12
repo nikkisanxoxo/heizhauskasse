@@ -1,0 +1,53 @@
+# Vereinskasse Caddy Reverse Proxy Konfiguration
+
+# HTTP-Only für interne Nutzung
+kasse.internal {
+    # Reverse Proxy zu Vereinskasse Container
+    reverse_proxy vereinskasse:3000
+
+    # Access Logs
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+
+    # Request Headers
+    header {
+        # Security Headers
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        
+        # Server Header entfernen
+        -Server
+    }
+
+    # Encoding
+    encode gzip
+
+    # Error Handling
+    handle_errors {
+        @502 expression `{http.error.status_code} == 502`
+        handle @502 {
+            respond "Vereinskasse ist momentan nicht erreichbar. Bitte später erneut versuchen." 502
+        }
+        
+        @503 expression `{http.error.status_code} == 503`
+        handle @503 {
+            respond "Vereinskasse Wartungsmodus. Bitte warten..." 503
+        }
+    }
+}
+
+# Optional: Zusätzliche Domain/IP für Zugriff
+# Uncomment und anpassen falls benötigt:
+# 
+# 192.168.1.100 {
+#     reverse_proxy vereinskasse:3000
+#     encode gzip
+# }
+#
+# kasse.meinverein.local {
+#     reverse_proxy vereinskasse:3000
+#     encode gzip
+# }

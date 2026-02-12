@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vereinskasse - System-Übersicht</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.3em;
+            margin-bottom: 40px;
+        }
+        
+        .architecture {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .component {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 3px solid #e0e7ff;
+            transition: all 0.3s;
+        }
+        
+        .component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        
+        .component-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+        
+        .component h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .component p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .feature {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: start;
+            gap: 15px;
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+            flex-shrink: 0;
+        }
+        
+        .feature-content h4 {
+            margin-bottom: 5px;
+            font-size: 1.2em;
+        }
+        
+        .feature-content p {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+        
+        .tech-stack {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 40px 0;
+        }
+        
+        .tech-stack h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .tech-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .tech-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .tech-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .workflow {
+            background: #e0e7ff;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 40px 0;
+        }
+        
+        .workflow h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .workflow-step {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .workflow-step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .workflow-arrow {
+            font-size: 2em;
+            color: #667eea;
+        }
+        
+        .quick-start {
+            background: #d4edda;
+            border: 3px solid #28a745;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 40px 0;
+        }
+        
+        .quick-start h2 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .quick-start ol {
+            margin-left: 25px;
+            line-height: 2;
+        }
+        
+        .quick-start code {
+            background: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e7ff;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .architecture {
+                grid-template-columns: 1fr;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .workflow-steps {
+                flex-direction: column;
+            }
+            
+            .workflow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍺 Vereinskasse</h1>
+        <p class="subtitle">Einfaches, selbst-gehostetes Kassensystem für Vereinsgetränke</p>
+        
+        <div class="architecture">
+            <div class="component">
+                <div class="component-icon">💻</div>
+                <h3>Backend</h3>
+                <p>Node.js Server mit Express und SQLite Datenbank. Läuft auf PC oder Raspberry Pi.</p>
+            </div>
+            
+            <div class="component">
+                <div class="component-icon">📱</div>
+                <h3>Frontend</h3>
+                <p>Touch-optimierte Web-App. Funktioniert auf jedem Tablet oder Smartphone.</p>
+            </div>
+            
+            <div class="component">
+                <div class="component-icon">💾</div>
+                <h3>Datenbank</h3>
+                <p>SQLite - eine einzige Datei. Einfach zu sichern und zu verwalten.</p>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">✅</div>
+                <div class="feature-content">
+                    <h4>Einfache Bedienung</h4>
+                    <p>Touch-optimierte Oberfläche perfekt für Tablets. Große Buttons, klare Anzeigen.</p>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🏠</div>
+                <div class="feature-content">
+                    <h4>Multi-Room Support</h4>
+                    <p>Separate Erfassung für mehrere Räume oder Bars im Vereinsheim.</p>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-content">
+                    <h4>Detaillierte Statistiken</h4>
+                    <p>Auswertungen nach Datum, Raum und Getränk. Visuelle Diagramme inklusive.</p>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-content">
+                    <h4>Datenschutz</h4>
+                    <p>Alle Daten bleiben im lokalen Netzwerk. Keine Cloud, keine externen Server.</p>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <div class="feature-content">
+                    <h4>Kostenlos</h4>
+                    <p>Open Source, keine Lizenzkosten, keine monatlichen Gebühren.</p>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🔧</div>
+                <div class="feature-content">
+                    <h4>Erweiterbar</h4>
+                    <p>Getränke einfach hinzufügen, Preise ändern, System nach Wunsch anpassen.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tech-stack">
+            <h2>🛠️ Technologie-Stack</h2>
+            <div class="tech-items">
+                <div class="tech-item">
+                    <strong>Backend</strong>
+                    Node.js + Express
+                </div>
+                <div class="tech-item">
+                    <strong>Datenbank</strong>
+                    SQLite 3
+                </div>
+                <div class="tech-item">
+                    <strong>Frontend</strong>
+                    HTML5 + CSS3 + JavaScript
+                </div>
+                <div class="tech-item">
+                    <strong>API</strong>
+                    RESTful JSON API
+                </div>
+                <div class="tech-item">
+                    <strong>Hosting</strong>
+                    Lokales Netzwerk
+                </div>
+                <div class="tech-item">
+                    <strong>Geräte</strong>
+                    Tablets, Smartphones, Browser
+                </div>
+            </div>
+        </div>
+        
+        <div class="workflow">
+            <h2>📋 Workflow im Verein</h2>
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="workflow-step-number">1</div>
+                    <strong>Server starten</strong>
+                    <p>PC/Raspberry Pi einschalten</p>
+                </div>
+                
+                <div class="workflow-arrow">→</div>
+                
+                <div class="workflow-step">
+                    <div class="workflow-step-number">2</div>
+                    <strong>Raum wählen</strong>
+                    <p>Bar 1 oder Bar 2</p>
+                </div>
+                
+                <div class="workflow-arrow">→</div>
+                
+                <div class="workflow-step">
+                    <div class="workflow-step-number">3</div>
+                    <strong>Getränke buchen</strong>
+                    <p>Touch auf Getränke-Buttons</p>
+                </div>
+                
+                <div class="workflow-arrow">→</div>
+                
+                <div class="workflow-step">
+                    <div class="workflow-step-number">4</div>
+                    <strong>Zahlung erfassen</strong>
+                    <p>"Bezahlt" Button drücken</p>
+                </div>
+                
+                <div class="workflow-arrow">→</div>
+                
+                <div class="workflow-step">
+                    <div class="workflow-step-number">5</div>
+                    <strong>Statistik prüfen</strong>
+                    <p>Monatliche Auswertung</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="quick-start">
+            <h2>🚀 Quick Start (3 Schritte)</h2>
+            <ol>
+                <li>Node.js installieren: <code>https://nodejs.org/</code></li>
+                <li>Im Projektordner: <code>npm install</code></li>
+                <li>Server starten: <code>npm start</code> oder Doppelklick auf <code>start.bat</code></li>
+            </ol>
+            <p style="margin-top: 15px;"><strong>Fertig!</strong> Öffne im Browser: <code>http://localhost:3000</code></p>
+        </div>
+        
+        <div style="background: #fff3cd; border: 3px solid #ffc107; padding: 25px; border-radius: 12px; margin: 40px 0;">
+            <h2 style="color: #856404; margin-bottom: 15px;">📁 Projekt-Dateien</h2>
+            <ul style="margin-left: 25px; line-height: 2; color: #333;">
+                <li><strong>server.js</strong> - Backend-Server mit API</li>
+                <li><strong>public/index.html</strong> - Kassenmodus (Hauptansicht)</li>
+                <li><strong>public/statistics.html</strong> - Statistiken und Auswertungen</li>
+                <li><strong>public/admin.html</strong> - Getränke-Verwaltung</li>
+                <li><strong>INSTALLATION.md</strong> - Detaillierte Installationsanleitung</li>
+                <li><strong>README.md</strong> - Projekt-Dokumentation</li>
+                <li><strong>SCHNELLANLEITUNG.html</strong> - Diese Übersicht zum Ausdrucken</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Projekt erstellt für euren Verein</strong></p>
+            <p style="margin-top: 10px;">Open Source • Kostenlos • Anpassbar</p>
+            <p style="margin-top: 20px; font-size: 2em;">🍻</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+version: '3.8'
+
+# Erweiterte Docker Compose mit optionalen Services
+# Standard: Nur Vereinskasse
+# Optional: Watchtower (Auto-Updates), Portainer (GUI)
+
+services:
+  # === HAUPT-SERVICE ===
+  vereinskasse:
+    build: .
+    container_name: vereinskasse
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - TZ=Europe/Berlin
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/rooms', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - vereinskasse-network
+
+  # === OPTIONAL: Watchtower (Auto-Updates) ===
+  # Aktivieren: Kommentare (#) vor den Zeilen entfernen
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   container_name: vereinskasse-watchtower
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - WATCHTOWER_CLEANUP=true
+  #     - WATCHTOWER_POLL_INTERVAL=86400  # 1x täglich
+  #   networks:
+  #     - vereinskasse-network
+
+  # === OPTIONAL: Portainer (Docker GUI Management) ===
+  # Aktivieren: Kommentare (#) vor den Zeilen entfernen
+  # Zugriff dann unter http://localhost:9000
+  # portainer:
+  #   image: portainer/portainer-ce:latest
+  #   container_name: vereinskasse-portainer
+  #   restart: unless-stopped
+  #   ports:
+  #     - "9000:9000"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - portainer_data:/data
+  #   networks:
+  #     - vereinskasse-network
+
+networks:
+  vereinskasse-network:
+    driver: bridge
+
+# Volumes für optionale Services
+# volumes:
+#   portainer_data:
